@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Neo-Shinobi | Concept Briefing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;700&display=swap');
+        
+        :root {
+            --bg-main: #fcfaf8;
+            --accent-blue: #4f46e5;
+            --accent-purple: #8b5cf6;
+            --text-dark: #1f2937;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            scroll-behavior: smooth;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-link {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-blue);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #4f46e5 0%, #8b5cf6 100%);
+            color: white;
+            transition: opacity 0.3s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <!-- Chosen Palette: Midnight Sand (Warm neutrals with tech-accents) -->
+    <!-- Application Structure Plan: 
+        1. Intro Section: High-impact hero with project slogan.
+        2. Navigation: Sticky tab-based navigation for 4 main areas (World, Sasuke, System, Content).
+        3. Thematic Sections:
+           - World: Narrative focus on Neo-Konoha and the tech-chakra convergence.
+           - Sasuke: Interactive stat chart (Chart.js) and equipment details.
+           - Combat System: Visual flow of Chakra vs Cursed Energy resources.
+           - Content: Grid layout for exploration and Co-op missions.
+        4. Rationale: A single-page dashboard layout allows stakeholders to see the "big picture" of the RPG mechanics while drilling down into specific systems like the hybrid combat loop.
+    -->
+    <!-- Visualization & Content Choices:
+        - Sasuke Stats -> Radar Chart (Chart.js) -> Show character balance (Strength, Ninjutsu, Tech, etc).
+        - Combat Loop -> Interactive Flow Boxes (HTML/CSS) -> Explain the resource cycle.
+        - World Elements -> Grid with hover effects -> Detail the modernized setting.
+        - Interaction: Users can switch tabs to focus on different aspects of the GDD.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <span class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">NS</span>
+                <span class="font-extrabold text-xl tracking-tighter">PROJECT NEO-SHINOBI</span>
+            </div>
+            <div class="hidden md:flex space-x-8 font-medium text-sm">
+                <span class="nav-link active" onclick="switchTab('overview', this)">개요</span>
+                <span class="nav-link" onclick="switchTab('character', this)">캐릭터</span>
+                <span class="nav-link" onclick="switchTab('system', this)">전투 시스템</span>
+                <span class="nav-link" onclick="switchTab('world', this)">월드 & 콘텐츠</span>
+            </div>
+            <div>
+                <span class="px-3 py-1 text-xs font-bold border border-indigo-600 text-indigo-600 rounded-full">INTERNAL DRAFT v1.0</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-24 pb-20 px-6 max-w-7xl mx-auto">
+        
+        <!-- SECTION: OVERVIEW -->
+        <section id="overview" class="tab-content active">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+                <div>
+                    <h2 class="text-indigo-600 font-bold tracking-widest text-sm mb-4">CONCEPT OVERVIEW</h2>
+                    <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">그림자가 다시,<br><span class="text-indigo-600">네온 사인</span> 속으로.</h1>
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                        전통적인 닌자의 길과 최첨단 과학 기술, 그리고 금기된 주술 에너지가 충돌하는 2030년의 메가시티. 
+                        사스케 우치하가 되어 도시의 부패한 시스템과 그림자 속의 위협을 처단하십시오.
+                    </p>
+                    <div class="flex space-x-4">
+                        <button onclick="switchTab('system', document.querySelectorAll('.nav-link')[2])" class="btn-action px-8 py-4 rounded-xl font-bold text-lg shadow-lg">전투 시작하기</button>
+                        <div class="flex items-center space-x-2 text-gray-400 font-medium">
+                            <span class="status-dot bg-green-500"></span>
+                            <span>Open World RPG</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card p-6 rounded-2xl border-indigo-100">
+                        <h3 class="font-bold text-xl mb-2">어반 판타지</h3>
+                        <p class="text-sm text-gray-500 italic">"빌딩 숲을 가르는 차크라 파쿠르와 와이어 액션"</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl border-purple-100">
+                        <h3 class="font-bold text-xl mb-2">하이브리드 액션</h3>
+                        <p class="text-sm text-gray-500 italic">"인술의 정밀함과 주술의 파괴적인 변칙성"</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl border-gray-100 col-span-2">
+                        <h3 class="font-bold text-xl mb-2">네오 코노하</h3>
+                        <p class="text-sm text-gray-500 italic">"AI 드론과 고대 비술이 공존하는 정교한 오픈월드 시뮬레이션"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-indigo-50/50 p-8 rounded-3xl mb-12">
+                <h3 class="text-center font-bold text-2xl mb-8">핵심 게임플레이 루프</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm text-xl">🔍</div>
+                        <h4 class="font-bold mb-2">정보 수집 및 탐색</h4>
+                        <p class="text-sm text-gray-600 italic">도시 해킹 및 드론 정찰을 통해 타겟의 약점 파악</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm text-xl">⚔️</div>
+                        <h4 class="font-bold mb-2">인주(忍呪) 하이브리드 전투</h4>
+                        <p class="text-sm text-gray-600 italic">차크라로 표식을 쌓고 주력으로 폭발시키는 전투 방식</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm text-xl">🆙</div>
+                        <h4 class="font-bold mb-2">테크 & 술식 강화</h4>
+                        <p class="text-sm text-gray-600 italic">획득한 보상으로 스마트 장비와 고대 술식 업그레이드</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: CHARACTER (SASUKE) -->
+        <section id="character" class="tab-content">
+            <div class="mb-10 text-center">
+                <h2 class="text-3xl font-extrabold mb-2">프로토타입: 우치하 사스케</h2>
+                <p class="text-gray-500 italic">"도시의 법은 낮의 것이지만, 질서는 밤의 것이다."</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="font-bold text-lg text-indigo-600 mb-4">비주얼 & 장비</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="text-indigo-400 mr-2">◈</span>
+                                <div>
+                                    <p class="font-bold">테크웨어 전투복</p>
+                                    <p class="text-sm text-gray-500">암부 문양이 새겨진 스마트 마스크와 충격 흡수 슈트.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-indigo-400 mr-2">◈</span>
+                                <div>
+                                    <p class="font-bold">진동 합금 카타나</p>
+                                    <p class="text-sm text-gray-500">뇌둔 치도리를 초고주파로 증폭시켜 모든 장갑을 관통.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-indigo-400 mr-2">◈</span>
+                                <div>
+                                    <p class="font-bold">홀로그램 단말기</p>
+                                    <p class="text-sm text-gray-500">윤회안의 시야를 디지털 데이터로 치환하여 분석.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl bg-purple-50/30">
+                        <h3 class="font-bold text-lg text-purple-600 mb-4">동술 메커니즘</h3>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-white rounded-xl border border-purple-100">
+                                <p class="font-bold text-sm">사륜안 (액티브)</p>
+                                <p class="text-xs text-gray-500">적의 공격 궤적 예측 및 완벽한 패링 지원.</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-xl border border-purple-100">
+                                <p class="font-bold text-sm">윤회안 (유틸리티)</p>
+                                <p class="text-xs text-gray-500">천수력을 활용한 공간 전이 및 지형지물 조작.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 glass-card p-8 rounded-3xl">
+                    <h3 class="font-bold text-xl mb-6 text-center">전투 능력치 분석 (Prototype v1.0)</h3>
+                    <div class="chart-container">
+                        <canvas id="sasukeStatsChart"></canvas>
+                    </div>
+                    <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center p-4 bg-gray-50 rounded-2xl">
+                            <p class="text-xs text-gray-500 font-bold">근접 위력</p>
+                            <p class="text-xl font-bold text-indigo-600">S</p>
+                        </div>
+                        <div class="text-center p-4 bg-gray-50 rounded-2xl">
+                            <p class="text-xs text-gray-500 font-bold">인술 사거리</p>
+                            <p class="text-xl font-bold text-indigo-600">A</p>
+                        </div>
+                        <div class="text-center p-4 bg-gray-50 rounded-2xl">
+                            <p class="text-xs text-gray-500 font-bold">주술 변칙성</p>
+                            <p class="text-xl font-bold text-indigo-600">S+</p>
+                        </div>
+                        <div class="text-center p-4 bg-gray-50 rounded-2xl">
+                            <p class="text-xs text-gray-500 font-bold">기동력</p>
+                            <p class="text-xl font-bold text-indigo-600">A+</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: SYSTEM -->
+        <section id="system" class="tab-content">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-extrabold mb-4">인주(忍呪) 하이브리드 전투 시스템</h2>
+                    <p class="text-gray-600 italic">차크라와 주력, 두 종류의 에너지를 순환시키는 고도의 조작감을 제공합니다.</p>
+                </div>
+
+                <div class="relative mb-20">
+                    <div class="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0 md:space-x-8">
+                        <div class="w-full md:w-1/2 p-8 rounded-3xl border-2 border-indigo-200 bg-white shadow-xl relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">🌀</div>
+                            <h3 class="font-bold text-2xl text-indigo-600 mb-4">인술 (Ninjutsu)</h3>
+                            <p class="text-sm text-gray-500 mb-6">차크라를 소모하여 물리적/속성 공격을 실행합니다.</p>
+                            <ul class="space-y-3 font-medium">
+                                <li class="flex justify-between items-center p-2 bg-indigo-50 rounded-lg">
+                                    <span>치도리 (Chidori)</span>
+                                    <span class="text-xs px-2 py-1 bg-white rounded shadow-sm text-indigo-600">근접/해킹</span>
+                                </li>
+                                <li class="flex justify-between items-center p-2 bg-indigo-50 rounded-lg">
+                                    <span>화둔: 호화구 (Fire)</span>
+                                    <span class="text-xs px-2 py-1 bg-white rounded shadow-sm text-indigo-600">범위/폭발</span>
+                                </li>
+                                <li class="flex justify-between items-center p-2 bg-indigo-50 rounded-lg">
+                                    <span>아마테라스 (Amaterasu)</span>
+                                    <span class="text-xs px-2 py-1 bg-white rounded shadow-sm text-indigo-600">지속 도트</span>
+                                </li>
+                            </ul>
+                            <div class="mt-6 pt-4 border-t border-indigo-100 flex items-center text-xs font-bold text-indigo-400">
+                                <span class="mr-2">ACTION:</span> 적에게 '저주 표식' 축적
+                            </div>
+                        </div>
+
+                        <div class="hidden md:block text-4xl text-gray-300">➔</div>
+
+                        <div class="w-full md:w-1/2 p-8 rounded-3xl border-2 border-purple-200 bg-white shadow-xl relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">🧿</div>
+                            <h3 class="font-bold text-2xl text-purple-600 mb-4">주술 (Jujutsu)</h3>
+                            <p class="text-sm text-gray-500 mb-6">주력을 소모하여 개념적/공간적 공격을 실행합니다.</p>
+                            <ul class="space-y-3 font-medium">
+                                <li class="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
+                                    <span>그림자 식신 (Shadows)</span>
+                                    <span class="text-xs px-2 py-1 bg-white rounded shadow-sm text-purple-600">추격/교란</span>
+                                </li>
+                                <li class="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
+                                    <span>공간 왜곡 (Distortion)</span>
+                                    <span class="text-xs px-2 py-1 bg-white rounded shadow-sm text-purple-600">군중 제어</span>
+                                </li>
+                                <li class="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
+                                    <span>영역 단절 (Barrier)</span>
+                                    <span class="text-xs px-2 py-1 bg-white rounded shadow-sm text-purple-600">미니 영역전개</span>
+                                </li>
+                            </ul>
+                            <div class="mt-6 pt-4 border-t border-purple-100 flex items-center text-xs font-bold text-purple-400">
+                                <span class="mr-2">REACTION:</span> 축적된 표식 폭발 & 차크라 회복
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 text-center text-xs font-bold text-gray-400 tracking-tighter uppercase">
+                        Continuous Combat Cycle Logic
+                    </div>
+                </div>
+
+                <div class="glass-card p-8 rounded-3xl">
+                    <h4 class="font-bold text-xl mb-6 flex items-center">
+                        <span class="w-2 h-8 bg-indigo-600 mr-3 rounded-full"></span>
+                        궁극기: 스사노오 (Susanoo)
+                    </h4>
+                    <p class="text-gray-600 mb-4 italic">차크라와 주력이 최고조에 달했을 때 발동하는 절대 방어 및 공격 태세.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="p-4 border border-indigo-100 rounded-2xl bg-white/50">
+                            <p class="text-sm font-bold text-indigo-600 mb-1">디지털 스사노오</p>
+                            <p class="text-xs text-gray-500 italic">반투명한 보랏빛 홀로그램 골격이 신체를 감싸며 일시적 무적 상태 진입.</p>
+                        </div>
+                        <div class="p-4 border border-indigo-100 rounded-2xl bg-white/50">
+                            <p class="text-sm font-bold text-indigo-600 mb-1">토츠카의 검 (Modernized)</p>
+                            <p class="text-xs text-gray-500 italic">전방 모든 물리/디지털 코드를 소거하는 파괴적인 광범위 베기.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: WORLD & CONTENTS -->
+        <section id="world" class="tab-content">
+            <div class="mb-12">
+                <h2 class="text-3xl font-extrabold mb-4 text-center">네오 코노하: 2030 오픈월드</h2>
+                <div class="h-1 w-20 bg-indigo-600 mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                <div class="relative h-64 rounded-3xl bg-indigo-900 overflow-hidden shadow-2xl flex items-center justify-center">
+                    <div class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-500 via-transparent to-transparent"></div>
+                    <div class="text-center z-10 p-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">도시 구역 (Districts)</h3>
+                        <p class="text-indigo-200 text-sm italic">상업 지구, 슬럼가, 산업 단지 등 6개의 독특한 구역 제공.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                        <span class="text-2xl mb-2">🏍️</span>
+                        <div>
+                            <h4 class="font-bold text-sm">첨단 모빌리티</h4>
+                            <p class="text-xs text-gray-500">차크라 바이크와 고속 와이어.</p>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                        <span class="text-2xl mb-2">📡</span>
+                        <div>
+                            <h4 class="font-bold text-sm">어반 파쿠르</h4>
+                            <p class="text-xs text-gray-500">모든 빌딩 표면 주행 가능.</p>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                        <span class="text-2xl mb-2">🕵️</span>
+                        <div>
+                            <h4 class="font-bold text-sm">잠입 & 해킹</h4>
+                            <p class="text-xs text-gray-500">드론을 통한 보안 무력화.</p>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                        <span class="text-2xl mb-2">🌌</span>
+                        <div>
+                            <h4 class="font-bold text-sm">장막 영역</h4>
+                            <p class="text-xs text-gray-500">도시 내 무작위 주사 공간 발생.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <h3 class="text-2xl font-bold mb-8 flex items-center justify-center">
+                    <span class="text-indigo-600 mr-2">✦</span> 멀티플레이 협동 레이드
+                </h3>
+                <div class="space-y-6">
+                    <div class="flex items-center p-6 bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center text-3xl mr-6">👹</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-lg">사이버 주령 토벌</h4>
+                            <p class="text-sm text-gray-500 italic">감염된 거대 기계 괴수와 변형된 주령을 처치하는 4인 협동 레이드.</p>
+                        </div>
+                        <button class="px-4 py-2 bg-gray-900 text-white text-xs font-bold rounded-lg uppercase tracking-wider">Join Room</button>
+                    </div>
+                    <div class="flex items-center p-6 bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center text-3xl mr-6">🏢</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-lg">영역 정화 미션</h4>
+                            <p class="text-sm text-gray-500 italic">도시를 잠식하는 장막을 제거하고 시민들을 구출하는 타임어택 미션.</p>
+                        </div>
+                        <button class="px-4 py-2 bg-gray-900 text-white text-xs font-bold rounded-lg uppercase tracking-wider">Join Room</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-12 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+            <div class="mb-8 md:mb-0">
+                <div class="flex items-center justify-center md:justify-start space-x-2 mb-4">
+                    <span class="w-6 h-6 bg-white rounded-md flex items-center justify-center text-gray-900 font-bold text-xs">NS</span>
+                    <span class="font-bold tracking-tighter">PROJECT NEO-SHINOBI</span>
+                </div>
+                <p class="text-gray-400 text-sm max-w-sm">
+                    본 문서는 프로젝트 네오-시노비의 초기 컨셉 기획 브리핑용으로 제작되었습니다. <br>
+                    © 2024 Shinobi Works Studio.
+                </p>
+            </div>
+            <div class="flex space-x-12 text-sm text-gray-400">
+                <div>
+                    <h5 class="text-white font-bold mb-4 uppercase tracking-widest text-xs">Category</h5>
+                    <ul class="space-y-2">
+                        <li>RPG</li>
+                        <li>Action</li>
+                        <li>Multiplayer</li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-white font-bold mb-4 uppercase tracking-widest text-xs">Platform</h5>
+                    <ul class="space-y-2">
+                        <li>PC</li>
+                        <li>Console</li>
+                        <li>Mobile Cloud</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching logic
+        function switchTab(tabId, element) {
+            // Update Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            element.classList.add('active');
+
+            // Update Content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            const target = document.getElementById(tabId);
+            target.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize Charts
+        window.onload = function() {
+            const ctx = document.getElementById('sasukeStatsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['근접 위력', '인술 숙련', '주술 변칙', '에너지 효율', '기동성', '테크 활용'],
+                    datasets: [{
+                        label: '우치하 사스케 (Adult Prototype)',
+                        data: [95, 90, 88, 82, 92, 85],
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(139, 92, 246, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(139, 92, 246, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { display: true },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>
